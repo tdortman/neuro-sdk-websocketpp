@@ -11,6 +11,27 @@
 #include "json.hpp"
 
 namespace NeuroWebsocketpp {
+    enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH,
+        CRITICAL,
+    };
+
+    inline std::string priorityToString(Priority priority) {
+        switch (priority) {
+            case LOW:
+                return "low";
+            case MEDIUM:
+                return "medium";
+            case HIGH:
+                return "high";
+            case CRITICAL:
+                return "critical";
+            default:
+                return "low";
+        }
+    }
     class Action {
     public:
         // Constructor
@@ -232,13 +253,14 @@ namespace NeuroWebsocketpp {
             send(payload.dump());
         }
 
-        void sendForceActions(const std::string& state, const std::string& query, bool ephemeral, const std::vector<std::string>& actions) {
+        void sendForceActions(const std::string& state, const std::string& query, bool ephemeral, const std::vector<std::string>& actions, Priority priority = Priority::LOW) {
             nlohmann::json payload;
             payload["command"] = "actions/force";
             payload["game"] = game_name;
             payload["data"]["state"] = state;
             payload["data"]["query"] = query;
             payload["data"]["ephemeral_context"] = ephemeral;
+            payload["data"]["priority"] = priorityToString(priority);
             payload["data"]["action_names"] = actions;
             send(payload.dump());
         }
@@ -253,11 +275,11 @@ namespace NeuroWebsocketpp {
             send(payload.dump());
         }
 
-        void forceAction(const std::string& state, const std::string& query, bool ephemeral, const std::vector<std::string>& actions) {
+        void forceAction(const std::string& state, const std::string& query, bool ephemeral, const std::vector<std::string>& actions, Priority priority = Priority::LOW) {
             std::unique_lock<std::mutex> lock(mutex);
             forcedActions = actions;
             waitingForForcedAction = true;
-            sendForceActions(state, query, ephemeral, actions);
+            sendForceActions(state, query, ephemeral, actions, priority);
             if (timeout >= 0)
             {
                 bool success = condition.wait_for(lock, std::chrono::seconds(timeout), [this]() { return !waitingForForcedAction || connection_failed || shutting_down; });
@@ -278,10 +300,10 @@ namespace NeuroWebsocketpp {
     //Helper function that registers actions, sends force action request for them, then stores sent actions in disposableActions field
     //so that they can't be unregistered in handleMessage method. If forceUnregister is true, it will unregister them just before exiting
     //as a failsafe, but this shouldn't be relied on - unregister should happen in handleMessage before sending action result.
-    void forceDisposableActions(const std::string& state, const std::string& query, bool ephemeral, const std::vector<Action>& actions, bool forceUnregister = false) {
+    void forceDisposableActions(const std::string& state, const std::string& query, bool ephemeral, const std::vector<Action>& actions, bool forceUnregister = false, Priority priority = Priority::LOW) {
             sendRegisterActions(actions);
             disposableActions = getActionNamesFromActions(actions);
-            forceAction(state, query, ephemeral, getActionNamesFromActions(actions));
+            forceAction(state, query, ephemeral, getActionNamesFromActions(actions), priority);
             if (forceUnregister) {
                 sendUnregisterActions(disposableActions);
             }
