@@ -1,0 +1,35 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "clang",
+            "generator": "Ninja",
+            "binaryDir": "build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "clang",
+            "configurePreset": "clang"
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "clang",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "clang"
+                },
+                {
+                    "type": "build",
+                    "name": "clang"
+                }
+            ]
+        }
+    ]
+}

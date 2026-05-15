@@ -18,9 +18,8 @@
 
       nativeBuildInputs = with pkgs; [
         llvm.clang-tools
-        llvm.lldb
-        gnumake
         cmake
+        ninja
       ];
 
     in
