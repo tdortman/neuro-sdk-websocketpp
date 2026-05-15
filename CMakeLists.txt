@@ -58,5 +58,5 @@ target_link_libraries(
 )
 
 if(WIN32)
-    target_compile_definitions(NeuroRPS PRIVATE ws2_32 mswsock)
+    target_link_libraries(NeuroRPS PRIVATE ws2_32 mswsock)
 endif()
