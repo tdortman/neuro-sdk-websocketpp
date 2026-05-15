@@ -18,6 +18,21 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++"
             }
+        },
+        {
+            "name": "zig",
+            "generator": "Ninja",
+            "binaryDir": "build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "zig",
+                "CMAKE_C_COMPILER_ARG1": "cc",
+
+                "CMAKE_CXX_COMPILER": "zig",
+                "CMAKE_CXX_COMPILER_ARG1": "c++",
+
+                "CMAKE_ASM_COMPILER": "zig",
+                "CMAKE_ASM_COMPILER_ARG1": "cc"
+            }
         }
     ],
     "buildPresets": [
@@ -28,6 +43,10 @@
         {
             "name": "clang",
             "configurePreset": "clang"
+        },
+        {
+            "name": "zig",
+            "configurePreset": "zig"
         }
     ],
     "workflowPresets": [
@@ -54,6 +73,19 @@
                 {
                     "type": "build",
                     "name": "clang"
+                }
+            ]
+        },
+        {
+            "name": "zig",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "zig"
+                },
+                {
+                    "type": "build",
+                    "name": "zig"
                 }
             ]
         }

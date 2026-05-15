@@ -20,6 +20,7 @@
         llvm.clang-tools
         cmake
         ninja
+        zig
       ];
 
     in
