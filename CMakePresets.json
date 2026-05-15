@@ -2,6 +2,15 @@
     "version": 6,
     "configurePresets": [
         {
+            "name": "clang-mingw",
+            "generator": "Ninja",
+            "binaryDir": "build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "x86_64-mingw32-clang",
+                "CMAKE_CXX_COMPILER": "x86_64-mingw32-clang++"
+            }
+        },
+        {
             "name": "clang",
             "generator": "Ninja",
             "binaryDir": "build",
@@ -13,11 +22,28 @@
     ],
     "buildPresets": [
         {
+            "name": "clang-mingw",
+            "configurePreset": "clang-mingw"
+        },
+        {
             "name": "clang",
             "configurePreset": "clang"
         }
     ],
     "workflowPresets": [
+        {
+            "name": "clang-mingw",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "clang-mingw"
+                },
+                {
+                    "type": "build",
+                    "name": "clang-mingw"
+                }
+            ]
+        },
         {
             "name": "clang",
             "steps": [

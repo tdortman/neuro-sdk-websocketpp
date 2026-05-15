@@ -46,6 +46,17 @@ endif()
 
 add_library(websocketpp INTERFACE)
 target_include_directories(websocketpp INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/websocketpp")
+target_compile_definitions(websocketpp INTERFACE _WEBSOCKETPP_CPP11_THREAD_)
 
 add_executable(NeuroRPS Test/RockPaperScissors.cpp)
-target_link_libraries(NeuroRPS PRIVATE nlohmann_json ${NEURO_BOOST_SYSTEM_TARGET} ${NEURO_BOOST_ASIO_TARGET} websocketpp)
+target_link_libraries(
+    NeuroRPS PRIVATE
+    nlohmann_json
+    ${NEURO_BOOST_SYSTEM_TARGET}
+    ${NEURO_BOOST_ASIO_TARGET}
+    websocketpp
+)
+
+if(WIN32)
+    target_compile_definitions(NeuroRPS PRIVATE ws2_32 mswsock)
+endif()
